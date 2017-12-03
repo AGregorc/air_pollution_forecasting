@@ -48,15 +48,50 @@ library(lubridate)
 date <- md$Date
 md$Date <- NULL
 
-month(as.POSIXlt(date, format="%Y-%m-%d"))
-a <- data.frame(wday(as.POSIXlt(date, format="%Y-%m-%d"), label=TRUE))
-colnames(a) <- c("Dan")
+a <- data.frame(wday(as.POSIXlt(date, format="%Y-%m-%d"), label=TRUE), month(as.POSIXlt(date, format="%Y-%m-%d")), year(as.POSIXlt(date, format="%Y-%m-%d")))
+colnames(a) <- c("Dan", "Mesec", "Leto")
 names(a)
 
-a <- dummy.data.frame(a, names=c("Dan"), sep="_")
+
+a <- dummy.data.frame(a, names=c("Dan", "Mesec"), sep="_")
 names(a)
 
 md[names(a)] <- a
+
+
+
+##############################################################################
+#
+# PREDICTION: CLASSIFICATION
+#
+##############################################################################
+
+getOzoneLevel <- function(ozone) {
+  LOW <- 60.0 
+  MODERATE <- 120.0 
+  HIGH <- 180.0 
+  
+  ifelse (ozone < LOW, "LOW",
+          ifelse (ozone < MODERATE, "MODERATE",
+                  ifelse (ozone < HIGH, "HIGH", "EXTREME")))
+}
+
+getPM10classes <- function(pm10) {
+  LOW <- 35.0 
+  
+  ifelse (ozone < LOW, "LOW", "HIGH")
+}
+
+
+ozone <- getOzoneLevel(md$O3)
+ozone
+
+PM10 <- getPM10classes(md$PM10)
+PM10
+
+
+
+
 
 
 
