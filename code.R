@@ -4,6 +4,8 @@
 #
 ##############################################################################
 
+# setwd(...)
+
 # To read data from a text file, use the "read.table" command.
 # The parameter header=TRUE indicates that the file to be read includes a first line with the column names
 md <- read.table(file="dataSem1.txt", sep=",", header=TRUE)
@@ -18,7 +20,6 @@ nrow(md)
 ncol(md)
 # First 6 rows in data
 head(md)
-
 
 # Useful data visualization functions
 plot(md$Glob_radiation_mean)
@@ -36,10 +37,8 @@ barplot(table(md$Glob_radiation_mean))
 #install.packages('dummies')
 library(dummies)
 
-
 # Convert Site attribute with one hot encoding
 md <- dummy.data.frame(md, names=c("Site"), sep="_")
-
 
 # library to work with date-time
 # install.packages('lubridate')
@@ -51,7 +50,6 @@ md$Date <- NULL
 a <- data.frame(wday(as.POSIXlt(date, format="%Y-%m-%d"), label=TRUE), month(as.POSIXlt(date, format="%Y-%m-%d")), year(as.POSIXlt(date, format="%Y-%m-%d")))
 colnames(a) <- c("Dan", "Mesec", "Leto")
 names(a)
-
 
 a <- dummy.data.frame(a, names=c("Dan", "Mesec"), sep="_")
 names(a)
@@ -89,7 +87,20 @@ ozone
 PM10 <- getPM10classes(md$PM10)
 PM10
 
+# Load the library
+#install.packages("CORElearn")  
+library(CORElearn)
 
+md$O3 <- NULL
+md$Glob_radiation_min <- NULL
+
+# attribute evaluation using information gain
+sort(attrEval(ozone ~ ., md, "InfGain"), decreasing = TRUE)
+
+
+# build a decision tree using information gain as a splitting criterion
+dt <- CoreModel(ozone  ~ ., md, model="tree", selectionEstimator="InfGain")
+plot(dt, md)
 
 
 
