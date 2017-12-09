@@ -1,10 +1,20 @@
+# setwd(...)
+
+#install.packages('dummies')
+# install.packages('lubridate')
+#install.packages("CORElearn")  
+library(dummies)
+library(lubridate) # library to work with date-time
+library(CORElearn)
+source("myfunctions.R")
+
 ##############################################################################
 #
 # DATA VISUALIZATION
 #
 ##############################################################################
 
-# setwd(...)
+
 
 # To read data from a text file, use the "read.table" command.
 # The parameter header=TRUE indicates that the file to be read includes a first line with the column names
@@ -34,15 +44,8 @@ barplot(table(md$Glob_radiation_mean))
 #
 ##############################################################################
 
-#install.packages('dummies')
-library(dummies)
-
 # Convert Site attribute with one hot encoding
 md <- dummy.data.frame(md, names=c("Site"), sep="_")
-
-# library to work with date-time
-# install.packages('lubridate')
-library(lubridate)
 
 date <- md$Date
 md$Date <- NULL
@@ -56,6 +59,15 @@ names(a)
 
 md[names(a)] <- a
 
+##############################################################################
+#
+# PREPARE LEARNING AND TESTING SUBSETS
+#
+##############################################################################
+
+sel <- sample(1:nrow(md), size=as.integer(nrow(md)*0.7), replace=F)
+learn <- md[sel,]
+test <- md[-sel,]
 
 
 ##############################################################################
@@ -80,30 +92,43 @@ getPM10classes <- function(pm10) {
   ifelse (ozone < LOW, "LOW", "HIGH")
 }
 
+ozone <- factor(getOzoneLevel(learn$O3))
 
-ozone <- getOzoneLevel(md$O3)
-ozone
+PM10 <- factor(getPM10classes(learn$PM10))
 
-PM10 <- getPM10classes(md$PM10)
-PM10
-
-# Load the library
-#install.packages("CORElearn")  
-library(CORElearn)
-
-md$O3 <- NULL
-md$Glob_radiation_min <- NULL
+learn$O3 <- NULL
+learn$Glob_radiation_min <- NULL
 
 # attribute evaluation using information gain
-sort(attrEval(ozone ~ ., md, "InfGain"), decreasing = TRUE)
+att <- sort(attrEval(ozone ~ ., learn, "InfGain"), decreasing = TRUE)
+att <- head(att, 2) # best n attributes
+set <- learn[names(att)]
 
+# TRAINING
 
 # build a decision tree using information gain as a splitting criterion
-dt <- CoreModel(ozone  ~ ., md, model="tree", selectionEstimator="InfGain")
-plot(dt, md)
+modelDT <- CoreModel(ozone  ~ ., set, model="tree", selectionEstimator="InfGain")
+#plot(modelDT, set)
 
+modelNB <- CoreModel(ozone ~ ., set, model="bayes")
+modelKNN <- CoreModel(ozone ~ ., set, model="knn", kInNN = 5)
 
+# TESTING
 
+predDT <- predict(modelDT, test, type = "class")
+caDT <- CA(test$O3, predDT)
+
+predNB <- predict(modelNB, test, type="class")
+caNB <- CA(test$O3, predNB)
+caNB
+
+predKNN <- predict(modelKNN, test, type="class")
+caKNN <- CA(test$O3, predKNN)
+caKNN
+
+# Combined results
+pred <- data.frame(predDT, predNB, predKNN)
+pred
 
 
 
