@@ -1,7 +1,7 @@
 # setwd(...)
 
 #install.packages('dummies')
-# install.packages('lubridate')
+#install.packages('lubridate')
 #install.packages("CORElearn")  
 library(dummies)
 library(lubridate) # library to work with date-time
@@ -40,7 +40,7 @@ barplot(table(md$Glob_radiation_mean))
 
 ##############################################################################
 #
-# ATTRIBURE EVALUATION AND CONSTRUCTING NEW ATTRIBUTES
+# CONSTRUCTING NEW ATTRIBUTES
 #
 ##############################################################################
 
@@ -89,7 +89,7 @@ getOzoneLevel <- function(ozone) {
 getPM10classes <- function(pm10) {
   LOW <- 35.0 
   
-  ifelse (ozone < LOW, "LOW", "HIGH")
+  ifelse (pm10 < LOW, "LOW", "HIGH")
 }
 
 ozone <- factor(getOzoneLevel(learn$O3))
@@ -114,20 +114,21 @@ modelNB <- CoreModel(ozone ~ ., set, model="bayes")
 modelKNN <- CoreModel(ozone ~ ., set, model="knn", kInNN = 5)
 
 # TESTING
+test.ozone <- getOzoneLevel(test$O3)
 
 predDT <- predict(modelDT, test, type = "class")
-caDT <- CA(test$O3, predDT)
+caDT <- CA(test.ozone, predDT)
 
 predNB <- predict(modelNB, test, type="class")
-caNB <- CA(test$O3, predNB)
+caNB <- CA(test.ozone, predNB)
 caNB
 
 predKNN <- predict(modelKNN, test, type="class")
-caKNN <- CA(test$O3, predKNN)
+caKNN <- CA(test.ozone, predKNN)
 caKNN
 
 # Combined results
-pred <- data.frame(predDT, predNB, predKNN)
+pred <- data.frame(predDT, predNB, predKNN, test.ozone)
 pred
 
 
