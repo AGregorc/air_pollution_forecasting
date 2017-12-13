@@ -5,20 +5,32 @@
 ##############################################################################
 
 getOzoneLevel <- function(ozone) {
-    LOW <- 60.0 
-    MODERATE <- 120.0 
-    HIGH <- 180.0 
-    
-    ifelse (ozone < LOW, "LOW",
-            ifelse (ozone < MODERATE, "MODERATE",
-                    ifelse (ozone < HIGH, "HIGH", "EXTREME")))
-  }
+  LOW <- 60.0 
+  MODERATE <- 120.0 
+  HIGH <- 180.0 
+  
+  ifelse (ozone < LOW, "LOW",
+          ifelse (ozone < MODERATE, "MODERATE",
+                  ifelse (ozone < HIGH, "HIGH", "EXTREME")))
+}
 
-  getPM10classes <- function(pm10) {
-    LOW <- 35.0 
-    
-    ifelse (pm10 < LOW, "LOW", "HIGH")
+getPM10classes <- function(pm10) {
+  LOW <- 35.0 
+  
+  ifelse (pm10 < LOW, "LOW", "HIGH")
+}
+
+scale.data <- function(data) {
+  norm.data <- data
+  
+  for (i in 1:ncol(data))
+  {
+    if (!is.factor(data[,i]))
+      norm.data[,i] <- scale(data[,i])
   }
+  
+  norm.data
+}
 
 classification <- function(learn, test){
   ozone <- factor(getOzoneLevel(learn$O3))
@@ -26,75 +38,150 @@ classification <- function(learn, test){
   PM10 <- factor(getPM10classes(learn$PM10))
 
   learn$O3 <- NULL
+  learn$PM10 <- NULL
   learn$Glob_radiation_min <- NULL
 
   # attribute evaluation using information gain
   att <- sort(attrEval(ozone ~ ., learn, "InfGain"), decreasing = TRUE)
-  att <- head(att, 2) # best n attributes
+  # att <- head(att, 2) # best n attributes
   set <- learn[names(att)]
+  
+  # For testing some errors on NN model
+  set <- learn
+  
+  # TESTING classes
+  test.ozone <- getOzoneLevel(test$O3)
+  test.PM10 <- getPM10classes(test$PM10)
 
   # TRAINING THE MAX OZONE LEVEL (O3)
 
-  # build a decision tree using information gain as a splitting criterion
-  modelDT <- CoreModel(ozone  ~ ., set, model="tree", selectionEstimator="InfGain")
-  #plot(modelDT, set)
-
-  modelNB <- CoreModel(ozone ~ ., set, model="bayes")
-  modelKNN <- CoreModel(ozone ~ ., set, model="knn", kInNN = 5)
-  modelRF <- CoreModel(ozone ~ ., data = set, model="rf") # Random forest
-
-  # TESTING O3
-  test.ozone <- getOzoneLevel(test$O3)
-
-  predDT <- predict(modelDT, test, type = "class")
-  caDT <- CA(test.ozone, predDT)
-
-  predNB <- predict(modelNB, test, type="class")
-  caNB <- CA(test.ozone, predNB)
-  caNB
-
-  predKNN <- predict(modelKNN, test, type="class")
-  caKNN <- CA(test.ozone, predKNN)
-  caKNN
-
-  predRF <- predict(modelRF, test, type="class")
-  caRF <- CA(test.ozone, predRF)
-  caRF
-
-  # Combined results
-  pred <- data.frame(predDT, predNB, predKNN, predRF, test.ozone)
-  pred
+  print("Max ozone level models (O3): ")
+  flush.console()
+  
+  models(set, ozone, test, test.ozone)
 
   # TRAINING the concentration of large pollution particles (PM10)
 
-  # build a decision tree using information gain as a splitting criterion
-  modelDT <- CoreModel(PM10  ~ ., set, model="tree", selectionEstimator="InfGain")
-  #plot(modelDT, set)
-
-  modelNB <- CoreModel(PM10 ~ ., set, model="bayes")
-  modelKNN <- CoreModel(PM10 ~ ., set, model="knn", kInNN = 5) 
-  modelRF <- CoreModel(PM10 ~ ., data = set, model="rf") # Random forest
-
-  # TESTING PM10
-  test.PM10 <- getPM10classes(test$PM10)
-
-  predDT <- predict(modelDT, test, type = "class")
-  caDT <- CA(test.PM10, predDT)
-
-  predNB <- predict(modelNB, test, type="class")
-  caNB <- CA(test.PM10, predNB)
-  caNB
-
-  predKNN <- predict(modelKNN, test, type="class")
-  caKNN <- CA(test.PM10, predKNN)
-  caKNN
-
-  predRF <- predict(modelRF, test, type="class")
-  caRF <- CA(test.PM10, predRF)
-  caRF
-
+  print("Large pollution particles models (PM10): ")
+  flush.console()
+  
+  models(set, PM10, test, test.PM10)
 
   # Combined results
-  pred <- data.frame(predDT, predNB, predKNN, predRF, test.PM10)
-  pred
+  #pred <- data.frame(predDT, predNB, predKNN, predRF, test.PM10)
+  #pred
+  
+  
+  
+}
+
+models <- function(train.data, train.class, test.data, test.class) {
+  # force the CoreModel function to train a model of a given type (specified by the parameter "target.model")
+  mymodel.coremodel <- function(formula, data, target.model){CoreModel(formula, data, model=target.model)}
+  
+  # force the predict function to return class labels only and also destroy the internal representation of a given model
+  mypredict.coremodel <- function(object, newdata) {pred <- predict(object, newdata)$class; destroyModels(object); pred}
+  
+  #
+  #
+  # DECISION TREES
+  #
+  #
+  
+  # build a decision tree using information gain as a splitting criterion
+  modelDT <- CoreModel(train.class  ~ ., train.data, model="tree", selectionEstimator="InfGain")
+  #plot(modelDT, train)
+  
+  predDT <- predict(modelDT, test.data, type = "class")
+  caDT <- CA(test.class, predDT)
+  print(paste("Decision tree: ", caDT))
+  flush.console()
+  
+  # 10-fold cross validation 
+  res <- errorest(train.class ~ ., data=train.data, model = mymodel.coremodel, predict = mypredict.coremodel, target.model = "tree")
+  print(paste("Cross validation: ", 1-res$error))
+  flush.console()
+  
+  
+  
+  #
+  #
+  # NAIVE BAYES CLASSIFIER
+  #
+  #
+  
+  modelNB <- CoreModel(train.class ~ ., train.data, model="bayes")
+  
+  predNB <- predict(modelNB, test.data, type="class")
+  caNB <- CA(test.class, predNB)
+  print(paste("Naive bayes: ", caNB))
+  flush.console()
+  
+  res <- errorest(train.class ~ ., data=train.data, model = mymodel.coremodel, predict = mypredict.coremodel, target.model = "bayes")
+  print(paste("Cross validation: ", 1-res$error))
+  flush.console()
+  
+  
+  
+  #
+  #
+  # KNN
+  #
+  #
+  
+  modelKNN <- CoreModel(train.class ~ ., train.data, model="knn", kInNN = 5) 
+  
+  predKNN <- predict(modelKNN, test.data, type="class")
+  caKNN <- CA(test.class, predKNN)
+  print(paste("5-nearest neighbors: ", caKNN))
+  flush.console()
+  
+  res <- errorest(train.class ~ ., data=train.data, model = mymodel.coremodel, predict = mypredict.coremodel, target.model = "knn")
+  print(paste("Cross validation: ", 1-res$error))
+  flush.console()
+  
+  
+  
+  #
+  #
+  # RANDOM FOREST
+  #
+  #
+  
+  modelRF <- CoreModel(train.class ~ ., data = train.data, model="rf") # Random forest
+  
+  predRF <- predict(modelRF, test.data, type="class")
+  caRF <- CA(test.class, predRF)
+  print(paste("Random forest: ", caRF))
+  flush.console()
+  
+  res <- errorest(train.class ~ ., data=train.data, model = mymodel.coremodel, predict = mypredict.coremodel, target.model = "rf")
+  print(paste("Cross validation: ", 1-res$error))
+  flush.console()
+  
+  
+  
+  #
+  #
+  # NEURAL NETWORKS
+  #
+  #
+  
+  # the algorithm is more robust when scaled data is used
+  norm.data <- scale.data(rbind(train.data,test.data[names(train.data)]))
+  norm.learn <- norm.data[1:nrow(train.data),]
+  norm.test <- norm.data[-(1:nrow(train.data)),]
+  
+  modelNN <- nnet(train.class ~ ., data = norm.learn, size = 5, decay = 0.0001, maxit = 10000, trace = FALSE)
+  predicted <- predict(modelNN, norm.test, type = "class")
+  caNN <- CA(test.class, predicted)
+  print(paste("Neural networks: ", caNN))
+  flush.console()
+  
+  mypredict.nnet <- function(object, newdata){as.factor(predict(object, newdata, type = "class"))}
+  res <- errorest(train.class~., data=norm.learn, model = nnet, predict = mypredict.nnet, size = 5, decay = 0.0001, maxit = 10000, trace = FALSE)
+  print(paste("Cross validation: ", 1-res$error))
+  flush.console()
+  
+  models <- c(modelDT, modelNB, modelKNN, modelRF, modelNN)
 }

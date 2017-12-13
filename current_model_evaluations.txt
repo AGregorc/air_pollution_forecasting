@@ -1,0 +1,34 @@
+
+Max ozone level models (O3): 
+Decision tree:  0.772849462365591
+Cross validation:  0.762975778546713
+
+Naive bayes:  0.620967741935484
+Cross validation:  0.583621683967705
+
+5-nearest neighbors:  0.770161290322581
+Cross validation:  0.783737024221453
+
+Random forest:  0.80510752688172
+Cross validation:  0.817185697808535
+
+Neural networks:  0.0672043010752688
+Cross validation:  0.748558246828143
+
+
+
+Large pollution particles models (PM10): 
+Decision tree:  0.873655913978495
+Cross validation:  0.884659746251442
+
+Naive bayes:  0.811827956989247
+Cross validation:  0.786620530565167
+
+5-nearest neighbors:  0.900537634408602
+Cross validation:  0.895617070357555
+
+Random forest:  0.900537634408602
+Cross validation:  0.904267589388697
+
+Neural networks:  0.861559139784946
+Cross validation:  0.883506343713956
