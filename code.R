@@ -47,7 +47,7 @@ md <- dummy.data.frame(md, names=c("Site"), sep="_")
 date <- md$Date
 md$Date <- NULL
 
-a <- data.frame(wday(as.POSIXlt(date, format="%Y-%m-%d"), label=TRUE), month(as.POSIXlt(date, format="%Y-%m-%d")), year(as.POSIXlt(date, format="%Y-%m-%d")))
+a <- data.frame(wday(as.POSIXlt(date, format="%Y-%m-%d")), month(as.POSIXlt(date, format="%Y-%m-%d")), year(as.POSIXlt(date, format="%Y-%m-%d")))
 colnames(a) <- c("Dan", "Mesec", "Leto")
 names(a)
 

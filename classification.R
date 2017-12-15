@@ -52,20 +52,24 @@ classification <- function(learn, test){
   # TESTING classes
   test.ozone <- getOzoneLevel(test$O3)
   test.PM10 <- getPM10classes(test$PM10)
+  
+  test$O3 <- NULL
+  test$PM10 <- NULL
+  test$Glob_radiation_min <- NULL
 
   # TRAINING THE MAX OZONE LEVEL (O3)
 
   print("Max ozone level models (O3): ")
   flush.console()
   
-  models(set, ozone, test, test.ozone)
+  neural(set, ozone, test, test.ozone)
 
   # TRAINING the concentration of large pollution particles (PM10)
 
   print("Large pollution particles models (PM10): ")
   flush.console()
   
-  models(set, PM10, test, test.PM10)
+  neural(set, PM10, test, test.PM10)
 
   # Combined results
   #pred <- data.frame(predDT, predNB, predKNN, predRF, test.PM10)
@@ -159,7 +163,9 @@ models <- function(train.data, train.class, test.data, test.class) {
   print(paste("Cross validation: ", 1-res$error))
   flush.console()
   
-  
+}
+
+neural <- function(train.data, train.class, test.data, test.class) {
   
   #
   #
@@ -172,7 +178,7 @@ models <- function(train.data, train.class, test.data, test.class) {
   norm.learn <- norm.data[1:nrow(train.data),]
   norm.test <- norm.data[-(1:nrow(train.data)),]
   
-  modelNN <- nnet(train.class ~ ., data = norm.learn, size = 5, decay = 0.0001, maxit = 10000, trace = FALSE)
+  modelNN <- nnet(train.class ~ ., data = norm.learn, size = 4, decay = 0.0001, maxit = 10000, trace = FALSE)
   predicted <- predict(modelNN, norm.test, type = "class")
   caNN <- CA(test.class, predicted)
   print(paste("Neural networks: ", caNN))
@@ -183,5 +189,5 @@ models <- function(train.data, train.class, test.data, test.class) {
   print(paste("Cross validation: ", 1-res$error))
   flush.console()
   
-  models <- c(modelDT, modelNB, modelKNN, modelRF, modelNN)
+  #models <- c(modelDT, modelNB, modelKNN, modelRF, modelNN)
 }
