@@ -48,12 +48,12 @@ regression <- function(learn, test){
   test$PM10 <- NULL
   test$Glob_radiation_min <- NULL
 
-  models(learn, ozone, test, test.ozone)
+  regression.models(learn, ozone, test, test.ozone)
   
-  models(learn, PM10, test, test.PM10)
+  regression.models(learn, PM10, test, test.PM10)
 }
 
-models <- function(train.data, train.values, test.data, test.values) {
+regression.models <- function(train.data, train.values, test.data, test.values) {
   observed <- test.values
   
   #

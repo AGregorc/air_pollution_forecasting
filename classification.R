@@ -34,13 +34,13 @@ scale.data <- function(data) {
 
 classification <- function(learn, test){
   ozone <- factor(getOzoneLevel(learn$O3))
-
+  
   PM10 <- factor(getPM10classes(learn$PM10))
-
+  
   learn$O3 <- NULL
   learn$PM10 <- NULL
   learn$Glob_radiation_min <- NULL
-
+  
   # attribute evaluation using information gain
   att <- sort(attrEval(ozone ~ ., learn, "InfGain"), decreasing = TRUE)
   # att <- head(att, 2) # best n attributes
@@ -56,21 +56,21 @@ classification <- function(learn, test){
   test$O3 <- NULL
   test$PM10 <- NULL
   test$Glob_radiation_min <- NULL
-
+  
   # TRAINING THE MAX OZONE LEVEL (O3)
-
+  
   print("Max ozone level models (O3): ")
   flush.console()
   
-  neural(set, ozone, test, test.ozone)
-
+  classification.models(set, ozone, test, test.ozone)
+  
   # TRAINING the concentration of large pollution particles (PM10)
-
+  
   print("Large pollution particles models (PM10): ")
   flush.console()
   
-  neural(set, PM10, test, test.PM10)
-
+  classification.models(set, PM10, test, test.PM10)
+  
   # Combined results
   #pred <- data.frame(predDT, predNB, predKNN, predRF, test.PM10)
   #pred
@@ -79,12 +79,31 @@ classification <- function(learn, test){
   
 }
 
-models <- function(train.data, train.class, test.data, test.class) {
+classification.models <- function(train.data, train.class, test.data, test.class) {
   # force the CoreModel function to train a model of a given type (specified by the parameter "target.model")
   mymodel.coremodel <- function(formula, data, target.model){CoreModel(formula, data, model=target.model)}
   
   # force the predict function to return class labels only and also destroy the internal representation of a given model
   mypredict.coremodel <- function(object, newdata) {pred <- predict(object, newdata)$class; destroyModels(object); pred}
+  
+  
+  
+  #
+  #
+  # MAJORITY CLASSIFIER
+  #
+  #
+  
+  
+  # The majority class is the class with the highest number of training examples
+  majority.class <- names(which.max(table(train.class)))
+  
+  # The majority classifier classifies all test instances into the majority class.
+  # The accuracy of the majority class
+  major <- sum(test.class == majority.class) / length(test.class)
+  print(paste("Majority classifier: ", major))
+  flush.console()
+  
   
   #
   #
@@ -99,7 +118,7 @@ models <- function(train.data, train.class, test.data, test.class) {
   predDT <- predict(modelDT, test.data, type = "class")
   caDT <- CA(test.class, predDT)
   print(paste("Decision tree: ", caDT))
-  flush.console()
+  flush.console() 
   
   # 10-fold cross validation 
   res <- errorest(train.class ~ ., data=train.data, model = mymodel.coremodel, predict = mypredict.coremodel, target.model = "tree")
@@ -163,9 +182,10 @@ models <- function(train.data, train.class, test.data, test.class) {
   print(paste("Cross validation: ", 1-res$error))
   flush.console()
   
-}
-
-neural <- function(train.data, train.class, test.data, test.class) {
+  # new function for neural network just for testing
+  #}
+  
+  #neural <- function(train.data, train.class, test.data, test.class) {
   
   #
   #

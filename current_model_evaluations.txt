@@ -1,6 +1,11 @@
+Tested on laptop:
+
+
 CLASSIFICATION: (CA error)
 
 Max ozone level models (O3): 
+Majority classifier:  0.618279569892473
+
 Decision tree:  0.772849462365591
 Cross validation:  0.762975778546713
 
@@ -19,6 +24,8 @@ Cross validation:  0.748558246828143
 
 
 Large pollution particles models (PM10): 
+Majority classifier:  0.861559139784946
+
 Decision tree:  0.873655913978495
 Cross validation:  0.884659746251442
 
