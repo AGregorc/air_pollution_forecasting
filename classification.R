@@ -62,14 +62,14 @@ classification <- function(learn, test){
   print("Max ozone level models (O3): ")
   flush.console()
   
-  classification.models(set, ozone, test, test.ozone)
+  classification.models(set, ozone, test, test.ozone, FALSE)
   
   # TRAINING the concentration of large pollution particles (PM10)
   
   print("Large pollution particles models (PM10): ")
   flush.console()
   
-  classification.models(set, PM10, test, test.PM10)
+  classification.models(set, PM10, test, test.PM10, FALSE)
   
   # Combined results
   #pred <- data.frame(predDT, predNB, predKNN, predRF, test.PM10)
@@ -79,7 +79,7 @@ classification <- function(learn, test){
   
 }
 
-classification.models <- function(train.data, train.class, test.data, test.class) {
+classification.models <- function(train.data, train.class, test.data, test.class, compute.crossValidation) {
   # force the CoreModel function to train a model of a given type (specified by the parameter "target.model")
   mymodel.coremodel <- function(formula, data, target.model){CoreModel(formula, data, model=target.model)}
   
@@ -112,7 +112,7 @@ classification.models <- function(train.data, train.class, test.data, test.class
   #
   
   # build a decision tree using information gain as a splitting criterion
-  modelDT <- CoreModel(train.class  ~ ., train.data, model="tree", selectionEstimator="InfGain")
+  modelDT <- CoreModel(train.class  ~ ., train.data, model="tree")
   #plot(modelDT, train)
   
   predDT <- predict(modelDT, test.data, type = "class")
@@ -120,10 +120,12 @@ classification.models <- function(train.data, train.class, test.data, test.class
   print(paste("Decision tree: ", caDT))
   flush.console() 
   
-  # 10-fold cross validation 
-  res <- errorest(train.class ~ ., data=train.data, model = mymodel.coremodel, predict = mypredict.coremodel, target.model = "tree")
-  print(paste("Cross validation: ", 1-res$error))
-  flush.console()
+  if (compute.crossValidation) {
+    # 10-fold cross validation 
+    res <- errorest(train.class ~ ., data=train.data, model = mymodel.coremodel, predict = mypredict.coremodel, target.model = "tree")
+    print(paste("Cross validation: ", 1-res$error))
+    flush.console()
+  }
   
   
   
@@ -140,10 +142,11 @@ classification.models <- function(train.data, train.class, test.data, test.class
   print(paste("Naive bayes: ", caNB))
   flush.console()
   
-  res <- errorest(train.class ~ ., data=train.data, model = mymodel.coremodel, predict = mypredict.coremodel, target.model = "bayes")
-  print(paste("Cross validation: ", 1-res$error))
-  flush.console()
-  
+  if (compute.crossValidation) {
+    res <- errorest(train.class ~ ., data=train.data, model = mymodel.coremodel, predict = mypredict.coremodel, target.model = "bayes")
+    print(paste("Cross validation: ", 1-res$error))
+    flush.console()
+  }
   
   
   #
@@ -159,10 +162,11 @@ classification.models <- function(train.data, train.class, test.data, test.class
   print(paste("5-nearest neighbors: ", caKNN))
   flush.console()
   
-  res <- errorest(train.class ~ ., data=train.data, model = mymodel.coremodel, predict = mypredict.coremodel, target.model = "knn")
-  print(paste("Cross validation: ", 1-res$error))
-  flush.console()
-  
+  if (compute.crossValidation) {
+    res <- errorest(train.class ~ ., data=train.data, model = mymodel.coremodel, predict = mypredict.coremodel, target.model = "knn")
+    print(paste("Cross validation: ", 1-res$error))
+    flush.console()
+  }
   
   
   #
@@ -178,9 +182,11 @@ classification.models <- function(train.data, train.class, test.data, test.class
   print(paste("Random forest: ", caRF))
   flush.console()
   
-  res <- errorest(train.class ~ ., data=train.data, model = mymodel.coremodel, predict = mypredict.coremodel, target.model = "rf")
-  print(paste("Cross validation: ", 1-res$error))
-  flush.console()
+  if (compute.crossValidation) {
+    res <- errorest(train.class ~ ., data=train.data, model = mymodel.coremodel, predict = mypredict.coremodel, target.model = "rf")
+    print(paste("Cross validation: ", 1-res$error))
+    flush.console()
+  }
   
   # new function for neural network just for testing
   #}
@@ -204,10 +210,12 @@ classification.models <- function(train.data, train.class, test.data, test.class
   print(paste("Neural networks: ", caNN))
   flush.console()
   
-  mypredict.nnet <- function(object, newdata){as.factor(predict(object, newdata, type = "class"))}
-  res <- errorest(train.class~., data=norm.learn, model = nnet, predict = mypredict.nnet, size = 5, decay = 0.0001, maxit = 10000, trace = FALSE)
-  print(paste("Cross validation: ", 1-res$error))
-  flush.console()
+  if (compute.crossValidation) {
+    mypredict.nnet <- function(object, newdata){as.factor(predict(object, newdata, type = "class"))}
+    res <- errorest(train.class~., data=norm.learn, model = nnet, predict = mypredict.nnet, size = 5, decay = 0.0001, maxit = 10000, trace = FALSE)
+    print(paste("Cross validation: ", 1-res$error))
+    flush.console()
+  }
   
   #models <- c(modelDT, modelNB, modelKNN, modelRF, modelNN)
 }

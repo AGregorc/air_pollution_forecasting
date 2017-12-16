@@ -1,0 +1,37 @@
+
+
+CLASSIFICATION: (CA error)
+
+Max ozone level models (O3): 
+Majority classifier:  0.613733905579399
+Decision tree:  0.0472103004291846
+Naive bayes:  0.113018597997139
+5-nearest neighbors:  0.0572246065808298
+Random forest:  0.0400572246065808
+Neural networks:  0.690987124463519
+
+
+Large pollution particles models (PM10): 
+Majority classifier:  0.892703862660944
+Decision tree:  0.909871244635193
+Naive bayes:  0.778254649499285
+5-nearest neighbors:  0.891273247496423
+Random forest:  0.921316165951359
+Neural networks:  0.886981402002861
+
+
+
+REGRESSION: (rmae error)
+
+Max ozone level models (O3): 
+Random forest:  0.481020235897367
+SVM:  0.522194328342664
+K-NN:  0.587254130090534
+NN:  0.999999994731768
+
+
+Large pollution particles models (PM10): 
+Random forest:  0.655900940182507
+SVM:  0.684327327539698
+K-NN:  0.827757682994627
+NN:  0.999999972590981

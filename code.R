@@ -49,6 +49,7 @@ md$Date <- NULL
 
 a <- data.frame(wday(as.POSIXlt(date, format="%Y-%m-%d")), month(as.POSIXlt(date, format="%Y-%m-%d")), year(as.POSIXlt(date, format="%Y-%m-%d")))
 colnames(a) <- c("Dan", "Mesec", "Leto")
+#a$Leto <- NULL
 names(a)
 
 a <- dummy.data.frame(a, names=c("Dan", "Mesec"), sep="_")
@@ -63,9 +64,11 @@ md[names(a)] <- a
 ##############################################################################
 
 sel <- sample(1:nrow(md), size=as.integer(nrow(md)*0.7), replace=F)
-learning <- md[sel,]
-testing <- md[-sel,]
-
+koper <- md[md$Site == 'Koper',]
+koper$Site <- NULL
+learning <- md[md$Leto != 2016,]
+testing <- md[md$Leto == 2016,]
+summary(testing)
 ##############################################################################
 #
 # PREDICTION: CLASSIFICATION
