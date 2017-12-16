@@ -63,9 +63,7 @@ md[names(a)] <- a
 #
 ##############################################################################
 
-sel <- sample(1:nrow(md), size=as.integer(nrow(md)*0.7), replace=F)
-koper <- md[md$Site == 'Koper',]
-koper$Site <- NULL
+#sel <- sample(1:nrow(md), size=as.integer(nrow(md)*0.7), replace=F)
 learning <- md[md$Leto != 2016,]
 testing <- md[md$Leto == 2016,]
 summary(testing)
@@ -75,7 +73,7 @@ summary(testing)
 #
 ##############################################################################
 
-classification(learning, testing)
+classification(learning, testing, TRUE)
 regression(learning, testing)
 
 

@@ -32,7 +32,7 @@ scale.data <- function(data) {
   norm.data
 }
 
-classification <- function(learn, test){
+classification <- function(learn, test, calculate.crossValidation){
   ozone <- factor(getOzoneLevel(learn$O3))
   
   PM10 <- factor(getPM10classes(learn$PM10))
@@ -62,14 +62,14 @@ classification <- function(learn, test){
   print("Max ozone level models (O3): ")
   flush.console()
   
-  classification.models(set, ozone, test, test.ozone, FALSE)
+  classification.models(set, ozone, test, test.ozone, calculate.crossValidation)
   
   # TRAINING the concentration of large pollution particles (PM10)
   
   print("Large pollution particles models (PM10): ")
   flush.console()
   
-  classification.models(set, PM10, test, test.PM10, FALSE)
+  classification.models(set, PM10, test, test.PM10, calculate.crossValidation)
   
   # Combined results
   #pred <- data.frame(predDT, predNB, predKNN, predRF, test.PM10)

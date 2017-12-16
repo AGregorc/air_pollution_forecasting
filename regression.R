@@ -47,10 +47,20 @@ regression <- function(learn, test){
   test$O3 <- NULL
   test$PM10 <- NULL
   test$Glob_radiation_min <- NULL
-
-  regression.models(learn, ozone, test, test.ozone)
   
-  regression.models(learn, PM10, test, test.PM10)
+  print("Max ozone level models (O3): ")
+  flush.console()
+
+  predicted <- regression.models(learn, ozone, test, test.ozone)
+  plot(test.ozone,type="l",col="red")
+  points(predicted,col="green")
+  
+  print("Large pollution particles models (PM10): ")
+  flush.console()
+  
+  predicted <- regression.models(learn, PM10, test, test.PM10)
+  plot(test.PM10,type="l",col="red")
+  points(predicted,col="green")
 }
 
 regression.models <- function(train.data, train.values, test.data, test.values) {
@@ -61,8 +71,8 @@ regression.models <- function(train.data, train.values, test.data, test.values) 
   #
   
   rf.model <- randomForest(train.values ~ ., train.data)
-  predicted <- predict(rf.model, test.data)
-  rmae.rf <- rmae(observed, predicted, mean(train.values))
+  rf.predicted <- predict(rf.model, test.data)
+  rmae.rf <- rmae(observed, rf.predicted, mean(train.values))
   print(paste("Random forest: ", rmae.rf))
   flush.console()
   
@@ -100,12 +110,22 @@ regression.models <- function(train.data, train.values, test.data, test.values) 
   # important!!! 
   # in regression problems use linout = T
   
-  #set.seed(6789)
-  nn.model <- nnet(train.values ~ ., train.data, size = 5, decay = 1e-4, maxit = 10000, linout = T, trace = FALSE)
-  predicted <- predict(nn.model, test.data)
+  
+  # the algorithm is more robust when scaled data is used
+  norm.data <- scale.data(rbind(train.data,test.data[names(train.data)]))
+  norm.learn <- norm.data[1:nrow(train.data),]
+  norm.test <- norm.data[-(1:nrow(train.data)),]
+  
+  set.seed(6789)
+  #nn.model <- nnet(train.values ~ ., train.data, size = 1, decay = 1e-4, maxit = 1000000, linout = T, trace = FALSE)
+  #nn.model <- nnet(x = norm.learn, y = train.values, size = 1, decay = 1e-4, maxit = 1000000, linout = T, trace = FALSE)
+  nn.model <- nnet(train.values ~ ., norm.learn, size = 6, decay = 1e-4, maxit = 10000000, linout = T, trace = FALSE)
+  predicted <- predict(nn.model, norm.test)
   rmae.nn <- rmae(observed, predicted, mean(train.values))
-  print(paste("NN: ", rmae.nn))
+  print(paste("Neural network: ", rmae.nn))
   flush.console()
+  
+  rf.predicted
 }
 
 
