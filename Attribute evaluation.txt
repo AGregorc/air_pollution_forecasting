@@ -1,0 +1,45 @@
+
+funkcija za evaluation: 
+best <- sort(attrEval(md$PM10 ~ ., md, "RReliefFexpRank"), decreasing = TRUE)
+
+
+Best attributes for predicting O3:
+
+ Glob_radiation_max Glob_radiation_mean                PM10       Temp_1500_max       Temp_site_max 
+       0.0694621134        0.0658318078        0.0494934573        0.0046694825        0.0046219430 
+
+      Temp_1500_min      Temp_1500_mean                Date   Precipitation_sum          Site_Koper 
+       0.0032589460        0.0014585302        0.0001879788       -0.0007519692       -0.0011426397 
+
+     Site_Ljubljana        Humidity_min  Precipitation_mean       Temp_site_min      Temp_site_mean 
+      -0.0011426397       -0.0036037199       -0.0037784383       -0.0048388449       -0.0075547393 
+
+       Pressure_max       Pressure_mean        Pressure_min       Wind_gust_min        Humidity_max 
+      -0.0123052660       -0.0123458262       -0.0123753242       -0.0134317683       -0.0140168850 
+
+      Humidity_mean      Wind_gust_mean      Wind_speed_max     Wind_speed_mean       Wind_gust_max 
+      -0.0149445313       -0.0156802933       -0.0157099613       -0.0182944243       -0.0188545904 
+
+     Wind_speed_min 
+      -0.0210309269 
+
+
+
+Best attributes for predicting PM10:
+                 O3      Temp_site_mean       Temp_site_max       Temp_site_min       Temp_1500_min 
+       0.0612693692        0.0223611946        0.0211160612        0.0208627672        0.0200363073 
+
+     Temp_1500_mean       Temp_1500_max        Pressure_min        Pressure_max       Pressure_mean 
+       0.0187861411        0.0185372372        0.0177539459        0.0175381418        0.0171006607 
+
+         Site_Koper      Site_Ljubljana                Date        Humidity_max     Wind_speed_mean 
+       0.0008823125        0.0008823125        0.0001547738       -0.0028816060       -0.0068204251 
+
+     Wind_gust_mean  Precipitation_mean       Humidity_mean       Wind_gust_min      Wind_speed_max 
+      -0.0092299186       -0.0107262370       -0.0111850968       -0.0120017284       -0.0123693887 
+
+  Precipitation_sum        Humidity_min      Wind_speed_min       Wind_gust_max  Glob_radiation_max 
+      -0.0128446432       -0.0135454097       -0.0136866997       -0.0174574824       -0.0536077475 
+
+Glob_radiation_mean 
+      -0.0682577315 

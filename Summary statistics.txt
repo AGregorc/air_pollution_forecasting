@@ -1,0 +1,31 @@
+Glob_radiation_max Glob_radiation_mean      PM10        Temp_1500_max     Temp_site_max  
+ Min.   :  0.0      Min.   :  0.00      Min.   : -0.20   Min.   :-14.300   Min.   :-7.90  
+ 1st Qu.: 17.0      1st Qu.:  2.25      1st Qu.: 13.80   1st Qu.: -0.600   1st Qu.: 7.30  
+ Median :125.0      Median : 21.62      Median : 19.35   Median :  4.800   Median :13.60  
+ Mean   :183.4      Mean   : 37.72      Mean   : 22.71   Mean   :  4.719   Mean   :13.33  
+ 3rd Qu.:352.0      3rd Qu.: 70.22      3rd Qu.: 27.50   3rd Qu.:  9.675   3rd Qu.:19.30  
+ Max.   :619.0      Max.   :138.38      Max.   :114.90   Max.   : 52.400   Max.   :33.90  
+ 
+ Temp_1500_min     Temp_1500_mean    Precipitation_sum   Site_Koper     Site_Ljubljana    Humidity_min  
+ Min.   :-15.100   Min.   :-14.750   Min.   : 0.000    Min.   :0.0000   Min.   :0.0000   Min.   :16.80  
+ 1st Qu.: -2.400   1st Qu.: -1.644   1st Qu.: 0.000    1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.:58.00  
+ Median :  2.900   Median :  3.725   Median : 0.000    Median :1.0000   Median :0.0000   Median :71.20  
+ Mean   :  2.765   Mean   :  3.560   Mean   : 1.089    Mean   :0.5101   Mean   :0.4899   Mean   :70.25  
+ 3rd Qu.:  7.600   3rd Qu.:  8.459   3rd Qu.: 0.200    3rd Qu.:1.0000   3rd Qu.:1.0000   3rd Qu.:84.60  
+ Max.   : 52.400   Max.   : 52.400   Max.   :38.500    Max.   :1.0000   Max.   :1.0000   Max.   :99.10  
+
+ Precipitation_mean Temp_site_min     Temp_site_mean    Pressure_max    Pressure_mean     Pressure_min   
+ Min.   :0.000      Min.   :-10.800   Min.   :-9.675   Min.   : 951.9   Min.   : 947.3   Min.   : 942.1  
+ 1st Qu.:0.000      1st Qu.:  5.025   1st Qu.: 6.075   1st Qu.: 983.0   1st Qu.: 982.3   1st Qu.: 981.7  
+ Median :0.000      Median : 10.950   Median :11.925   Median :1001.1   Median : 999.9   Median : 999.0  
+ Mean   :0.133      Mean   : 10.536   Mean   :11.613   Mean   :1000.0   Mean   : 999.0   Mean   : 998.4  
+ 3rd Qu.:0.000      3rd Qu.: 16.000   3rd Qu.:17.113   3rd Qu.:1016.4   3rd Qu.:1015.7   3rd Qu.:1014.9  
+ Max.   :4.838      Max.   : 27.700   Max.   :28.837   Max.   :1039.6   Max.   :1038.6   Max.   :1038.0  
+
+ Wind_gust_min     Humidity_max         O3             Mesec             Leto     
+ Min.   : 0.000   Min.   : 28.5   Min.   :  0.60   Min.   : 1.000   Min.   :2013  
+ 1st Qu.: 1.100   1st Qu.: 75.7   1st Qu.: 64.05   1st Qu.: 3.000   1st Qu.:2013  
+ Median : 1.600   Median : 86.2   Median : 88.05   Median : 6.000   Median :2014  
+ Mean   : 1.877   Mean   : 83.0   Mean   : 88.07   Mean   : 6.171   Mean   :2014  
+ 3rd Qu.: 2.200   3rd Qu.: 92.9   3rd Qu.:112.85   3rd Qu.: 9.000   3rd Qu.:2016  
+ Max.   :16.600   Max.   :100.0   Max.   :210.25   Max.   :12.000   Max.   :2016  
