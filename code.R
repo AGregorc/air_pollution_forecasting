@@ -114,9 +114,35 @@ testing <- md[md$Leto == 2016,]
 summary(testing)
 ##############################################################################
 #
-# PREDICTION: CLASSIFICATION
+# PREDICTION: CLASSIFICATION AND REGRESSION
 #
 ##############################################################################
 
 classification(learning, testing, TRUE)
 regression(learning, testing)
+
+
+##############################################################################
+#
+# PREDICTION: ADDITIONAL
+#
+##############################################################################
+
+combine <- function(data, num) {
+  combined <- data[1:(nrow(data)-num+1),]
+  for (i in 2:num) {
+    tmp <- data[i:(nrow(data) - num + i),]
+    colnames(tmp) <- c((i*ncol(data):i*(1+ncol(data))))
+    combined <- cbind(combined, tmp)
+  }
+  combined
+}
+
+for (i in 1:10) {
+  md <- combine(md, i)
+  learning <- md[md$Leto != 2016,]
+  testing <- md[md$Leto == 2016,]
+  
+  classification(learning, testing, FALSE)
+  regression(learning, testing)
+}
