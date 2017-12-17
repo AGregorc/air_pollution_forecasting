@@ -118,5 +118,5 @@ summary(testing)
 #
 ##############################################################################
 
-classification(learning, testing, FALSE)
+classification(learning, testing, TRUE)
 regression(learning, testing)

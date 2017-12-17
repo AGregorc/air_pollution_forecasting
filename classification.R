@@ -33,28 +33,22 @@ scale.data <- function(data) {
 }
 
 classification <- function(learn, test, calculate.crossValidation){
+  learn.ozone <- learn$O3
   ozone <- factor(getOzoneLevel(learn$O3))
   
+  learn.PM10 <- learn$PM10
   PM10 <- factor(getPM10classes(learn$PM10))
   
   learn$O3 <- NULL
-  learn$PM10 <- NULL
   learn$Glob_radiation_min <- NULL
   
-  # attribute evaluation using information gain
-  att <- sort(attrEval(ozone ~ ., learn, "InfGain"), decreasing = TRUE)
-  # att <- head(att, 2) # best n attributes
-  set <- learn[names(att)]
-  
-  # For testing some errors on NN model
-  set <- learn
-  
   # TESTING classes
-  test.ozone <- getOzoneLevel(test$O3)
-  test.PM10 <- getPM10classes(test$PM10)
+  test.O3 <- test$O3
+  test.ozone <- factor(getOzoneLevel(test$O3))
+  test.PM10 <- test$PM10
+  test.PM10 <- factor(getPM10classes(test$PM10))
   
   test$O3 <- NULL
-  test$PM10 <- NULL
   test$Glob_radiation_min <- NULL
   
   # TRAINING THE MAX OZONE LEVEL (O3)
@@ -62,7 +56,7 @@ classification <- function(learn, test, calculate.crossValidation){
   print("Max ozone level models (O3): ")
   flush.console()
   
-  predictions <- classification.models(set, ozone, test, test.ozone, calculate.crossValidation)
+  predictions <- classification.models(learn, ozone, test, test.ozone, calculate.crossValidation)
   #for (i in 1:nrow(predictions)) {
   #  print(paste("Pred: ", predictions[,i]))
   #  flush.console()
@@ -70,10 +64,16 @@ classification <- function(learn, test, calculate.crossValidation){
   
   # TRAINING the concentration of large pollution particles (PM10)
   
+  learn$O3 <- learn.ozone
+  learn$PM10 <- NULL
+  
+  test$O3 <- test.O3
+  test$PM10 <- NULL
+  
   print("Large pollution particles models (PM10): ")
   flush.console()
   
-  predictions <- classification.models(set, PM10, test, test.PM10, calculate.crossValidation)
+  predictions <- classification.models(learn, PM10, test, test.PM10, calculate.crossValidation)
   #for (i in 1:nrow(predictions)) {
   #  print(paste("Pred: ", predictions[,i]))
   #  flush.console()

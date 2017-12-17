@@ -11,13 +11,13 @@ Cross validation:  0.765598650927487
 Naive bayes:  0.640915593705293
 Cross validation:  0.649241146711636
 
-5-nearest neighbors:  0.732474964234621
+5-nearest neighbors:  0.752474964234621
 Cross validation:  0.794828555368184
 
-Random forest:  0.776824034334764
+Random forest:  0.0.791130185979971
 Cross validation:  0.822934232715008
 
-Neural networks:  0.741058655221745
+Neural networks:  0.761058655221745
 Cross validation:  0.780775716694772
 
 
