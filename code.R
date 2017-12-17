@@ -41,21 +41,66 @@ head(md)
 #
 ##############################################################################
 
+
 # Convert Site attribute with one hot encoding
 md <- dummy.data.frame(md, names=c("Site"), sep="_")
+
+
+md['Glob_radiation_min'] <- NULL
+sort(attrEval(md$O3 ~ ., md, "MSEofMean"), decreasing = TRUE)
+best <- sort(attrEval(md$O3 ~ ., md, "RReliefFexpRank"), decreasing = TRUE)
+o3 <- md['O3']
+md <- md[names(best[1:20])]
+md['O3'] <- o3
 
 date <- md$Date
 md$Date <- NULL
 
-a <- data.frame(wday(as.POSIXlt(date, format="%Y-%m-%d")), month(as.POSIXlt(date, format="%Y-%m-%d")), year(as.POSIXlt(date, format="%Y-%m-%d")))
-colnames(a) <- c("Dan", "Mesec", "Leto")
+a <- data.frame(wday(as.POSIXlt(date, format="%Y-%m-%d")))
+b <- data.frame(month(as.POSIXlt(date, format="%Y-%m-%d")))
+c <- data.frame(year(as.POSIXlt(date, format="%Y-%m-%d")))
+d <- data.frame(toSeason(date))
+e <- data.frame(as.POSIXlt(date)$mday)
+f <- data.frame(as.numeric(as.POSIXlt(date, format="%Y-%m-%d")) - as.numeric(as.POSIXlt("2013-1-1", format="%Y-%m-%d")))
+colnames(a) <- "Dan"
+colnames(b) <- "Mesec"
+colnames(c) <- "Leto"
+colnames(d) <- "LetniCas"
+colnames(e) <- "DanVMesecu"
+colnames(f) <- "Čas"
 #a$Leto <- NULL
-names(a)
 
-a <- dummy.data.frame(a, names=c("Dan", "Mesec"), sep="_")
-names(a)
+ad <- dummy.data.frame(a, names="Dan", sep="_")
+bd <- dummy.data.frame(b, names="Mesec", sep="_")
+dd <- dummy.data.frame(d, names="LetniCas", sep="_")
+names(ad)
+names(bd)
+names(c)
+names(dd)
+
+
+md[names(ad)] <- ad
+md[names(bd)] <- bd
+md[names(dd)] <- dd
 
 md[names(a)] <- a
+md[names(b)] <- b
+md[names(c)] <- c
+md[names(d)] <- d
+md[names(e)] <- e
+md[names(f)] <- f
+
+# This is just for testing purpose! 
+md[names(a)] <- NULL
+md[names(b)] <- NULL
+md[names(c)] <- NULL
+md[names(d)] <- NULL
+md[names(e)] <- NULL
+md[names(f)] <- NULL
+
+md[names(ad)] <- NULL
+md[names(bd)] <- NULL
+md[names(dd)] <- NULL
 
 ##############################################################################
 #
@@ -73,7 +118,5 @@ summary(testing)
 #
 ##############################################################################
 
-classification(learning, testing, TRUE)
+classification(learning, testing, FALSE)
 regression(learning, testing)
-
-

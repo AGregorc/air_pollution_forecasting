@@ -9,15 +9,15 @@ getOzoneLevel <- function(ozone) {
   MODERATE <- 120.0 
   HIGH <- 180.0 
   
-  ifelse (ozone < LOW, "LOW",
-          ifelse (ozone < MODERATE, "MODERATE",
-                  ifelse (ozone < HIGH, "HIGH", "EXTREME")))
+  ifelse (ozone < LOW, 1,
+          ifelse (ozone < MODERATE, 2,
+                  ifelse (ozone < HIGH, 3, 4)))
 }
 
 getPM10classes <- function(pm10) {
   LOW <- 35.0 
   
-  ifelse (pm10 < LOW, "LOW", "HIGH")
+  ifelse (pm10 < LOW, 1, 2)
 }
 
 scale.data <- function(data) {
@@ -62,14 +62,22 @@ classification <- function(learn, test, calculate.crossValidation){
   print("Max ozone level models (O3): ")
   flush.console()
   
-  classification.models(set, ozone, test, test.ozone, calculate.crossValidation)
+  predictions <- classification.models(set, ozone, test, test.ozone, calculate.crossValidation)
+  #for (i in 1:nrow(predictions)) {
+  #  print(paste("Pred: ", predictions[,i]))
+  #  flush.console()
+  #}
   
   # TRAINING the concentration of large pollution particles (PM10)
   
   print("Large pollution particles models (PM10): ")
   flush.console()
   
-  classification.models(set, PM10, test, test.PM10, calculate.crossValidation)
+  predictions <- classification.models(set, PM10, test, test.PM10, calculate.crossValidation)
+  #for (i in 1:nrow(predictions)) {
+  #  print(paste("Pred: ", predictions[,i]))
+  #  flush.console()
+  #}
   
   # Combined results
   #pred <- data.frame(predDT, predNB, predKNN, predRF, test.PM10)
@@ -204,9 +212,9 @@ classification.models <- function(train.data, train.class, test.data, test.class
   norm.learn <- norm.data[1:nrow(train.data),]
   norm.test <- norm.data[-(1:nrow(train.data)),]
   
-  modelNN <- nnet(train.class ~ ., data = norm.learn, size = 4, decay = 0.0001, maxit = 10000, trace = FALSE)
-  predicted <- predict(modelNN, norm.test, type = "class")
-  caNN <- CA(test.class, predicted)
+  modelNN <- nnet(train.class ~ ., data = norm.learn, size = 4, decay = 0.0001, maxit = 1000, trace = FALSE)
+  predNN <- predict(modelNN, norm.test, type = "class")
+  caNN <- CA(test.class, predNN)
   print(paste("Neural networks: ", caNN))
   flush.console()
   
@@ -218,4 +226,5 @@ classification.models <- function(train.data, train.class, test.data, test.class
   }
   
   #models <- c(modelDT, modelNB, modelKNN, modelRF, modelNN)
+  predicted <- data.frame(test.class, predDT, predNB, predKNN, predRF, predNN)
 }

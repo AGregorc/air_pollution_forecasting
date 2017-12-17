@@ -1,4 +1,3 @@
-Tested on laptop:
 
 
 CLASSIFICATION: (CA error)
@@ -50,11 +49,11 @@ Max ozone level models (O3):
 Random forest:  0.415612369487976
 SVM:  0.411305420819382
 K-NN:  0.518925408848649
-NN:  1.00000000123346
+Neural network:  1.00000000123346
 
 
 Large pollution particles models (PM10): 
 Random forest:  0.629767385518781
 SVM:  0.600907891288498
 K-NN:  0.782659312025462
-NN:  0.99999999075758
+Neural network:  0.99999999075758

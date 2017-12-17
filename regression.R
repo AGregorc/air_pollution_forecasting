@@ -37,7 +37,6 @@ regression <- function(learn, test){
   PM10 <- learn$PM10
   
   learn$O3 <- NULL
-  learn$PM10 <- NULL
   learn$Glob_radiation_min <- NULL
   
   # TESTING classes
@@ -45,7 +44,6 @@ regression <- function(learn, test){
   test.PM10 <- test$PM10
   
   test$O3 <- NULL
-  test$PM10 <- NULL
   test$Glob_radiation_min <- NULL
   
   print("Max ozone level models (O3): ")
@@ -57,6 +55,12 @@ regression <- function(learn, test){
   
   print("Large pollution particles models (PM10): ")
   flush.console()
+  
+  learn$O3 <- ozone
+  learn$PM10 <- NULL
+  
+  test$O3 <- test.ozone
+  test$PM10 <- NULL
   
   predicted <- regression.models(learn, PM10, test, test.PM10)
   plot(test.PM10,type="l",col="red")
